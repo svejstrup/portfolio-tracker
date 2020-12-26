@@ -14,7 +14,7 @@ export function DataImport() {
         let formData = new FormData()
         formData.append(file!.name, file!)
         
-        let success = await uploadCsvFile(formData);
+        await uploadCsvFile(formData);
     }
 
     return (

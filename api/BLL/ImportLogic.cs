@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.DAL;
 using api.models;
+using api.models.entities;
 using CsvHelper;
 using Microsoft.AspNetCore.Http;
 
@@ -24,7 +25,7 @@ namespace api.BLL
         {
             var portfolio = await _transactionsDataManager.GetPortfolioFromTransactions();
 
-            var transactions = ParseCsv(file);
+            var transactions = ParseCsv(file).Select(nef => new TransactionEntity(nef));
         }
 
         private List<NordeaExportFormat> ParseCsv(IFormFile file) 

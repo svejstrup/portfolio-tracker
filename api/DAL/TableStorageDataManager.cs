@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -25,7 +26,7 @@ namespace api.DAL
             _table.CreateIfNotExistsAsync().Wait();
         }
 
-        public async Task BatchInsert(IList<ITableEntity> entityList)
+        public async Task BatchInsert(IEnumerable<ITableEntity> entityList)
         {
             var batchOperation = new TableBatchOperation();
 
@@ -36,7 +37,7 @@ namespace api.DAL
 
                 if (batchOperation.Count == MaxBatchSize)
                 {
-                    await _table.ExecuteBatchAsync(batchOperation);
+                    var res = await _table.ExecuteBatchAsync(batchOperation);
                     batchOperation.Clear();
                 }
             }
@@ -46,6 +47,23 @@ namespace api.DAL
             {
                 await _table.ExecuteBatchAsync(batchOperation);
             }
+        }
+
+        public async Task<List<T>> GetAll<T>() where T : ITableEntity, new()
+        {
+            var query = new TableQuery<T>();
+            TableContinuationToken token = null;
+            List<T> entities = new List<T>();
+
+            do
+            {
+                var segment = await _table.ExecuteQuerySegmentedAsync(query, token);
+                entities.AddRange(segment.Results);
+                token = segment.ContinuationToken;
+            } while (token != null);
+            
+
+            return entities;
         }
 
         // public async Task<List<LogTransEntity>> GetDataByDeviceIdAndDate(string partitionKey, DateTime fromDate, DateTime toDate, string deviceDataType)
