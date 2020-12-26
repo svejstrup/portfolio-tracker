@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getTableData } from "../services/api-service";
+import Button from '@material-ui/core/Button';
 
 export function PortfolioTable() {
     const [count, setCount] = useState(0);
@@ -22,10 +23,10 @@ export function PortfolioTable() {
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
+      <Button variant="contained" color="primary" onClick={() => setCount(count + 1)}>
         Click me
-      </button>
-      <button onClick={getData}>Api call</button>
+      </Button>
+      <Button variant="contained" color="primary" onClick={getData}>Api call</Button>
       <p>{response}</p>
     </div>
   );

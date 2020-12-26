@@ -1,11 +1,13 @@
 import React from 'react';
 import './App.css';
-import { PortfolioTable } from './components/table';
+import { DataImport } from './components/data-import';
+import { PortfolioTable } from './components/portfolio-table';
 
 function App() {
   return (
     <div className="App">
-      <PortfolioTable/>   
+      <PortfolioTable/>
+      <DataImport/>
     </div>
   );
 }
