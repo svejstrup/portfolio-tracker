@@ -10,23 +10,30 @@ namespace api.DAL
 {
     public class TransactionDataManager
     {
-        private readonly TableStorageDataManager _tableStorageDataManager;
+        private readonly TableStorageDataManager<TransactionEntity> _tableStorageDataManager;
+        private readonly Dictionary<string, string> _symbolTranslation;
 
         public TransactionDataManager()
         {
-            _tableStorageDataManager = new TableStorageDataManager("Transactions");
-        }
-
-        public async Task<Portfolio> GetPortfolioFromTransactions()
-        {   
-            var transactions = await _tableStorageDataManager.GetAll<TransactionEntity>();
-
-            return new Portfolio();
+            _tableStorageDataManager = new TableStorageDataManager<TransactionEntity>("Transactions");
+            _symbolTranslation = new Dictionary<string, string>() {
+                {"BAVA", "BAVA.CO"}
+            };
         }
 
         public async Task InsertMany(List<TransactionEntity> entities)
         {
             await _tableStorageDataManager.BatchInsert(entities.Cast<ITableEntity>());
+        }
+
+        public async Task<List<TransactionEntity>> GetAll()
+        {
+            return (await _tableStorageDataManager.GetAll())
+                .Select(t => 
+                {
+                    t.Symbol = _symbolTranslation.GetValueOrDefault(t.Symbol) ?? t.Symbol;
+                    return t;
+                }).ToList();
         }
     }
 }

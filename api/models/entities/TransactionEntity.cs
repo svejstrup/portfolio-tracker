@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace api.models.entities
@@ -14,9 +15,10 @@ namespace api.models.entities
             PartitionKey = exportData.Symbol;
             RowKey = exportData.OrderNumber;
 
-            foreach(var prop in exportData.GetType().GetProperties())
+            foreach(var prop in typeof(NordeaExportFormat).GetProperties().Where(p => p.CanWrite))
             {
-                prop.SetValue(this, prop.GetValue(exportData));
+                var thisProp = this.GetType().GetProperty(prop.Name);
+                thisProp.SetValue(this, Convert.ChangeType(prop.GetValue(exportData), thisProp.PropertyType));
             }
         }
 
@@ -34,7 +36,7 @@ namespace api.models.entities
         public double Fee {get; set;}
         public string Symbol {get; set;}
         public string Currency {get; set;}
-        public string ExchangeRate {get; set;}
+        public double ExchangeRate {get; set;}
         public DateTimeOffset Date {get; set;}
     }
 }

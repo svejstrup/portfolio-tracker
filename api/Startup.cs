@@ -14,12 +14,14 @@ namespace api
         {
             // BLL            
             builder.Services.AddSingleton<PortfolioLogic>();
+            builder.Services.AddSingleton<ImportLogic>();
             
             // SAL
             builder.Services.AddSingleton<YahooFinanceClient>();
             
             // DAL
             builder.Services.AddSingleton<TransactionDataManager>();
+            builder.Services.AddSingleton<HistoryDataManager>();
         }
     }
 }

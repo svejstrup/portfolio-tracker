@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { getTableData } from "../services/api-service";
 import Button from '@material-ui/core/Button';
+import { Portfolio } from "../models/portfolio";
 
 export function PortfolioTable() {
     const [count, setCount] = useState(0);
-    const [response, setResponse] = useState("");
+    const [portfolio, setPortfolio] = useState<Portfolio>();
 
   // Similar to componentDidMount and componentDidUpdate:
   useEffect(() => {
@@ -16,8 +17,7 @@ export function PortfolioTable() {
     let res = await getTableData();
 
     console.log(res);
-
-    setResponse(res);
+    setPortfolio(res);
   }
 
   return (
@@ -27,7 +27,7 @@ export function PortfolioTable() {
         Click me
       </Button>
       <Button variant="contained" color="primary" onClick={getData}>Api call</Button>
-      <p>{response}</p>
+      <p>{portfolio?.totalReturn}</p>
     </div>
   );
 }

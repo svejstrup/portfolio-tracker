@@ -15,13 +15,13 @@ namespace api.models
         double Fee {get; set;}
         string Symbol {get; set;}
         string Currency {get; set;}
-        string ExchangeRate {get; set;}
+        double ExchangeRate {get; set;}
         DateTimeOffset Date {get; set;}
     }
 
     public class NordeaExportFormat : INordeaExportFormat
     {
-        [Name("Ordre nr.")]
+        [Name("Ordrenr.")]
         public string OrderNumber {get; set;}
         
         [Name("Navn")]
@@ -30,7 +30,7 @@ namespace api.models
         [Name("Køb / Salg")]
         public string OrderType {get; set;}
         
-        [Name("Stk / Nom")]
+        [Name("Stk. / Nom.")]
         public int Pieces {get; set;}
         
         [Name("Kurs")]
@@ -42,10 +42,15 @@ namespace api.models
         [Name("Konto")]
         public string Account {get; set;}
 
+        [Name("Fee")]
         public double Fee {get; set;}
+        [Name("Symbol")]
         public string Symbol {get; set;}
+        [Name("Currency")]
         public string Currency {get; set;}
-        public string ExchangeRate {get; set;}
+        [Name("ExchangeRate")]
+        public double ExchangeRate {get; set;}
+        [Name("Date")]
         public DateTimeOffset Date {get; set;}
     }
 }

@@ -1,2 +1,2 @@
-Ordrenr.;Navn;Køb / Salg;Stk. / Nom.;Kurs;Afregningsbeløb;Konto
-20201218304602;Bavarian Nordic A/S;Køb;26;197,10;5.153,60 DKK;4396 936 408
+Ordrenr.;Navn;Køb / Salg;Stk. / Nom.;Kurs;Afregningsbeløb;Konto;Fee;Symbol;Currency;ExchangeRate;Date
+20201218304602;Bavarian Nordic A/S;Køb;26;197,10;5.153,60;4396 936 408;29,0;BAVA;DKK;1;2020-12-26

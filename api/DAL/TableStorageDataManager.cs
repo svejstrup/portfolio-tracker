@@ -7,7 +7,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace api.DAL
 {
-    public class TableStorageDataManager
+    public class TableStorageDataManager<TEntityType> where TEntityType : ITableEntity, new()
     {
          private readonly CloudTable _table;
         private const int MaxBatchSize = 100; // Table storage does not allow batches larger than 100 
@@ -49,11 +49,11 @@ namespace api.DAL
             }
         }
 
-        public async Task<List<T>> GetAll<T>() where T : ITableEntity, new()
+        public async Task<List<TEntityType>> GetAll()
         {
-            var query = new TableQuery<T>();
+            var query = new TableQuery<TEntityType>();
             TableContinuationToken token = null;
-            List<T> entities = new List<T>();
+            List<TEntityType> entities = new List<TEntityType>();
 
             do
             {

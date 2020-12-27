@@ -1,7 +1,10 @@
+import { Portfolio } from "../models/portfolio";
+
 export async function getTableData() {
     const response = await fetch('/api/portfolio/GetTableData');
-    let res = await response.text();
-    return res;
+    let portfolio = (await response.json()) as Portfolio;
+
+    return portfolio;
 }
 
 export async function uploadCsvFile(file: FormData) {

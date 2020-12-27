@@ -23,15 +23,23 @@ namespace api.BLL
 
         public async Task ImportTransactions(IFormFile file)
         {
-            var portfolio = await _transactionsDataManager.GetPortfolioFromTransactions();
+            var dbTransactions = await _transactionsDataManager.GetAll();
+            var existingOrderNumbers = dbTransactions.Select(t => t.OrderNumber).ToHashSet();
 
-            var transactions = ParseCsv(file).Select(nef => new TransactionEntity(nef));
+            var newTransactions = ParseCsv(file)
+                .Select(nef => new TransactionEntity(nef))
+                .Where(t => !existingOrderNumbers.Contains(t.OrderNumber))
+                .ToList();
+
+            await _transactionsDataManager.InsertMany(newTransactions);
+
+            // TODO - update history for new transactions
         }
 
         private List<NordeaExportFormat> ParseCsv(IFormFile file) 
         {
             using(var reader = new StreamReader(file.OpenReadStream()))
-            using(var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            using(var csv = new CsvReader(reader, CultureInfo.GetCultureInfo("da-DK")))
             {
                 // csv.Configuration.HasHeaderRecord = false;
                 csv.Configuration.Delimiter = ";";

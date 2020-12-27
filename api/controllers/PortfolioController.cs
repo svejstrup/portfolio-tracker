@@ -32,9 +32,9 @@ namespace api.controllers
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             
-            await _portfolioLogic.GetTableData();
+            var portfolio = await _portfolioLogic.GetPortfolio();
 
-            return new OkResult();
+            return new OkObjectResult(portfolio);
         }
     }
 }
