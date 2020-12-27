@@ -57,12 +57,9 @@ namespace api.BLL
 
             var previousHoldings = new List<Holding>();
 
-            var piecesBought = 0;
-            var valueBought = 0.0;
+            var sharesOwned = 0;
+            var costOfOwned = 0.0;
             var buyDate = DateTimeOffset.MinValue;
-
-            var piecesSold = 0;
-            var valueSold = 0.0;
 
             foreach(var t in transactionEntities.OrderBy(t => t.Date))
             {
@@ -78,32 +75,34 @@ namespace api.BLL
                 switch(transactionType)
                 {
                     case TransactionType.Køb:
-                        piecesBought += t.Pieces;
-                        valueBought += t.Pieces * t.Price * t.ExchangeRate + t.Fee;
+                        sharesOwned += t.Pieces;
+                        costOfOwned += t.Pieces * t.Price * t.ExchangeRate + t.Fee;
                         break;
                     case TransactionType.Salg:
+                        costOfOwned += t.Fee;
+                        var pricePerShare = costOfOwned / sharesOwned; 
                         previousHoldings.Add(new Holding(t)
                         {
                             AmountOwned = t.Pieces,
                             BuyDate = buyDate,
-                            BuyPrice = valueBought / piecesBought,
-                            Price = t.Price,
+                            BuyPrice = pricePerShare,
+                            Price = t.Price * t.ExchangeRate,
                             SoldDate = t.Date
                         });
 
-                        piecesSold += t.Pieces;
-                        valueSold += t.Pieces * t.Price * t.ExchangeRate - t.Fee;
+                        sharesOwned -= t.Pieces;
+                        costOfOwned -= t.Pieces * pricePerShare;
                         break;
                 }
             }
 
-            if (piecesBought != piecesSold)
+            if (sharesOwned > 0)
             {
                 currentHolding = new Holding(transactionEntities.First())
                 {
-                    AmountOwned = piecesBought - piecesSold,
+                    AmountOwned = sharesOwned,
                     BuyDate = buyDate,
-                    BuyPrice = piecesBought != 0 ? valueBought / piecesBought : 0,
+                    BuyPrice = costOfOwned / sharesOwned
                 };
             }
 

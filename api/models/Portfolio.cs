@@ -62,6 +62,4 @@ namespace api.models
         public double? ReturnValue {get => TotalValue - BuyValue;}
         public double? ReturnPercentage {get => TotalValue / BuyValue;}
     }
-
-    
 }
