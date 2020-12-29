@@ -86,13 +86,9 @@ namespace api.DAL
                 var query = new TableQuery<TEntityType>()
                     .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, key))
                     .Take(1);
-
-                do
-                {
-                    var segment = await _table.ExecuteQuerySegmentedAsync(query, token);
-                    entities.AddRange(segment.Results);
-                    token = segment.ContinuationToken;
-                } while (token != null);
+               
+                var segment = await _table.ExecuteQuerySegmentedAsync(query, token);
+                entities.AddRange(segment.Results);
             }
             
             return entities;

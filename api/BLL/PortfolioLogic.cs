@@ -124,8 +124,9 @@ namespace api.BLL
             var symbols = holdings.Select(h => h.Symbol).ToList();
             var currentPrices = await _yahooFinanceClient.GetCurrentPrices(symbols);
 
-            var exchangeRateMap = await _currencyDataManager
-                .GetLatest(holdings.Select(h => h.Currency).Distinct());
+            var distinctCurrencies = holdings.Select(h => h.Currency).ToHashSet();
+
+            var exchangeRateMap = await _currencyDataManager.GetLatest(distinctCurrencies);
 
             holdings = holdings
                 .Select(h => 
