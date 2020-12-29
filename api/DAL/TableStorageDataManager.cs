@@ -9,12 +9,13 @@ namespace api.DAL
 {
     public class TableStorageDataManager<TEntityType> where TEntityType : ITableEntity, new()
     {
-         private readonly CloudTable _table;
+        private readonly CloudTable _table;
         private const int MaxBatchSize = 100; // Table storage does not allow batches larger than 100 
 
         public TableStorageDataManager(string tableName)
         {
-            var connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+
+            var connectionString = Environment.GetEnvironmentVariable("StorageConnectionString");
             // Parse the connection string and return a reference to the storage account.
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
 
