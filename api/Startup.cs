@@ -18,10 +18,12 @@ namespace api
             
             // SAL
             builder.Services.AddSingleton<YahooFinanceClient>();
+            builder.Services.AddHttpClient<CurrencyClient>();
             
             // DAL
             builder.Services.AddSingleton<TransactionDataManager>();
             builder.Services.AddSingleton<HistoryDataManager>();
+            builder.Services.AddSingleton<CurrencyDataManager>();
         }
     }
 }

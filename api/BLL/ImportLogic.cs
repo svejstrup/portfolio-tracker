@@ -24,11 +24,11 @@ namespace api.BLL
         public async Task ImportTransactions(IFormFile file)
         {
             var dbTransactions = await _transactionsDataManager.GetAll();
-            var existingOrderNumbers = dbTransactions.Select(t => t.OrderNumber).ToHashSet();
+            var existingOrderNumbers = dbTransactions.Select(t => (t.PartitionKey, t.RowKey)).ToHashSet();
 
             var newTransactions = ParseCsv(file)
                 .Select(nef => new TransactionEntity(nef))
-                .Where(t => !existingOrderNumbers.Contains(t.OrderNumber))
+                .Where(t => !existingOrderNumbers.Contains((t.PartitionKey, t.RowKey)))
                 .ToList();
 
             await _transactionsDataManager.InsertMany(newTransactions);
@@ -39,11 +39,15 @@ namespace api.BLL
         private List<NordeaExportFormat> ParseCsv(IFormFile file) 
         {
             using(var reader = new StreamReader(file.OpenReadStream()))
-            using(var csv = new CsvReader(reader, CultureInfo.GetCultureInfo("da-DK")))
+            using(var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 // csv.Configuration.HasHeaderRecord = false;
-                csv.Configuration.Delimiter = ";";
-                csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower().Replace(" ", String.Empty).Replace(".",String.Empty).Replace("/", String.Empty);
+                csv.Configuration.Delimiter = ",";
+                csv.Configuration.TrimOptions = CsvHelper.Configuration.TrimOptions.Trim;
+
+                // csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower().Replace(" ", String.Empty).Replace(".",String.Empty).Replace("/", String.Empty);
+                csv.Configuration.RegisterClassMap<NordeaExportFormatMap>();
+
                 var records = csv.GetRecords<NordeaExportFormat>();
 
                 return records.ToList();

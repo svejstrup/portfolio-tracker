@@ -18,14 +18,13 @@ namespace api.SAL
         {
             var securities = await Yahoo
                 .Symbols(symbols.ToArray())
-                .Fields(Field.Symbol, Field.RegularMarketPrice, Field.Currency, Field.RegularMarketChangePercent)
+                .Fields(Field.Symbol, Field.RegularMarketPrice, Field.RegularMarketChangePercent)
                 .QueryAsync();
             
             var res = securities.Values
                 .Select(sec => new BaseStock 
                 {
                     Symbol = sec.Symbol,
-                    Currency = sec.Currency,
                     Price = sec.RegularMarketPrice,
                     ChangeToday = sec.RegularMarketChangePercent
                 })

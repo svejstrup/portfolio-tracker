@@ -16,16 +16,21 @@ namespace api.BLL
         private readonly YahooFinanceClient _yahooFinanceClient;
         private readonly TransactionDataManager _transactionDataManager;
         private readonly ILogger<PortfolioLogic> _logger;
+        private readonly CurrencyClient _currencyClient;
+        private readonly CurrencyDataManager _currencyDataManager;
 
-        public PortfolioLogic(YahooFinanceClient yahooFinanceClient, TransactionDataManager transactionDataManager, ILogger<PortfolioLogic> logger)
+        public PortfolioLogic(YahooFinanceClient yahooFinanceClient, TransactionDataManager transactionDataManager, ILogger<PortfolioLogic> logger, CurrencyClient currencyClient, CurrencyDataManager currencyDataManager)
         {
             _yahooFinanceClient = yahooFinanceClient;
             _transactionDataManager = transactionDataManager;
             _logger = logger;
+            _currencyClient = currencyClient;
+            _currencyDataManager = currencyDataManager;
         }
 
         public async Task<Portfolio> GetPortfolio()
         {
+            // await UpdateCurrencyExchangeRates(new List<string>{"USD", "NOK", "EUR"});
             var transactions = await _transactionDataManager.GetAll();
             var portfolio = await GetPortfolioFromTransactions(transactions);
 
@@ -75,23 +80,28 @@ namespace api.BLL
                 switch(transactionType)
                 {
                     case TransactionType.Køb:
-                        sharesOwned += t.Pieces;
-                        costOfOwned += t.Pieces * t.Price * t.ExchangeRate + t.Fee;
+                        sharesOwned += t.Pieces.Value;
+                        costOfOwned += t.Pieces.Value * t.Price * t.ExchangeRate + t.Fee;
                         break;
                     case TransactionType.Salg:
-                        costOfOwned += t.Fee;
-                        var pricePerShare = costOfOwned / sharesOwned; 
+                        costOfOwned += t.Fee; // Add the fee for selling
+                        var pricePerShare = costOfOwned / sharesOwned; // Calculate average buy price per share of currently owned shares
                         previousHoldings.Add(new Holding(t)
                         {
-                            AmountOwned = t.Pieces,
+                            AmountOwned = t.Pieces.Value,
                             BuyDate = buyDate,
                             BuyPrice = pricePerShare,
                             Price = t.Price * t.ExchangeRate,
                             SoldDate = t.Date
                         });
 
-                        sharesOwned -= t.Pieces;
-                        costOfOwned -= t.Pieces * pricePerShare;
+                        sharesOwned -= t.Pieces.Value;
+                        costOfOwned -= t.Pieces.Value * pricePerShare;
+                        
+                        // Reset buy date if all shares are sold
+                        if (sharesOwned == 0)
+                            buyDate = DateTimeOffset.MinValue;
+
                         break;
                 }
             }
@@ -114,12 +124,15 @@ namespace api.BLL
             var symbols = holdings.Select(h => h.Symbol).ToList();
             var currentPrices = await _yahooFinanceClient.GetCurrentPrices(symbols);
 
+            var exchangeRateMap = await _currencyDataManager
+                .GetLatest(holdings.Select(h => h.Currency).Distinct());
+
             holdings = holdings
                 .Select(h => 
                 {
                     if (currentPrices.TryGetValue(h.Symbol, out var currentStockPrice))
                     {
-                        h.Price = currentStockPrice.Price;
+                        h.Price = currentStockPrice.Price * exchangeRateMap[h.Currency];
                         h.ChangeToday = currentStockPrice.ChangeToday;
                     }
                     else 
@@ -131,6 +144,23 @@ namespace api.BLL
                 }).ToList();
 
             return holdings;
+        }
+
+        public async Task UpdateCurrencyExchangeRates()
+        {
+            var portfolio = await GetPortfolio();
+
+            var currencies = portfolio.CurrentHoldings
+                .Select(ch => ch.Currency)
+                .Distinct()
+                .Where(c => c != "DKK");
+
+            var exhangeRates = await _currencyClient.GetExchangeRates(currencies);
+
+            var entities = exhangeRates
+                .Select(rate => new CurrencyEntity(rate.Key, rate.Value, DateTimeOffset.UtcNow));
+            
+            await _currencyDataManager.InsertMany(entities);
         }
     }
 }

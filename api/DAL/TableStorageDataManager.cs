@@ -28,6 +28,15 @@ namespace api.DAL
 
         public async Task BatchInsert(IEnumerable<ITableEntity> entityList)
         {
+            foreach(var group in entityList.GroupBy(entity => entity.PartitionKey))
+            {
+                await BatchInsertSamePartitionKey(group);
+            }
+        }
+
+
+        private async Task BatchInsertSamePartitionKey(IEnumerable<ITableEntity> entityList)
+        {
             var batchOperation = new TableBatchOperation();
 
             // Insert entities in batches of at most 'maxBatchSize'
@@ -63,6 +72,28 @@ namespace api.DAL
             } while (token != null);
             
 
+            return entities;
+        }
+
+        public async Task<List<TEntityType>> GetLatestByPartitionKey(IEnumerable<string> partitionKeys)
+        {
+            TableContinuationToken token = null;
+            List<TEntityType> entities = new List<TEntityType>();
+
+            foreach (var key in partitionKeys)
+            {
+                var query = new TableQuery<TEntityType>()
+                    .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, key))
+                    .Take(1);
+
+                do
+                {
+                    var segment = await _table.ExecuteQuerySegmentedAsync(query, token);
+                    entities.AddRange(segment.Results);
+                    token = segment.ContinuationToken;
+                } while (token != null);
+            }
+            
             return entities;
         }
 

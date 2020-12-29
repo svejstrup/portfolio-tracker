@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using CsvHelper.Configuration;
 using CsvHelper.Configuration.Attributes;
 
 namespace api.models
@@ -8,20 +10,20 @@ namespace api.models
         string OrderNumber {get; set;}
         string Name {get; set;}
         string OrderType {get; set;}
-        int Pieces {get; set;}
+        int? Pieces {get; set;}
         double Price {get; set;}
-        double TotalAmount {get; set;}
         string Account {get; set;}
         double Fee {get; set;}
         string Symbol {get; set;}
         string Currency {get; set;}
         double ExchangeRate {get; set;}
         DateTimeOffset Date {get; set;}
+        string StockExchange {get; set;}
     }
 
     public class NordeaExportFormat : INordeaExportFormat
     {
-        [Name("Ordrenr.")]
+        [Name("Hovedordrenr.")]
         public string OrderNumber {get; set;}
         
         [Name("Navn")]
@@ -31,26 +33,34 @@ namespace api.models
         public string OrderType {get; set;}
         
         [Name("Stk. / Nom.")]
-        public int Pieces {get; set;}
+        public int? Pieces {get; set;}
         
         [Name("Kurs")]
         public double Price {get; set;}
         
-        [Name("Afregningsbeløb")]
-        public double TotalAmount {get; set;}
-        
-        [Name("Konto")]
+        [Name("Depot")]
         public string Account {get; set;}
 
-        [Name("Fee")]
+        [Name("Kurtage")]
         public double Fee {get; set;}
         [Name("Symbol")]
         public string Symbol {get; set;}
-        [Name("Currency")]
+        [Name("Valuta")]
         public string Currency {get; set;}
-        [Name("ExchangeRate")]
+        [Name("Valutakurs")]
         public double ExchangeRate {get; set;}
-        [Name("Date")]
+        [Name("Handelstidspunkt")]
         public DateTimeOffset Date {get; set;}
+        [Name("Børs")]
+        public string StockExchange { get; set; }
+    }
+
+    public class NordeaExportFormatMap : ClassMap<NordeaExportFormat> 
+    {
+        public NordeaExportFormatMap()
+        {
+            AutoMap(CultureInfo.InvariantCulture);
+            Map(m => m.Date).TypeConverterOption.Format("dd-MM-yyyy");
+        }
     }
 }

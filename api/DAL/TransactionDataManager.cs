@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.models;
 using api.models.entities;
+using api.util;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace api.DAL
@@ -17,7 +18,29 @@ namespace api.DAL
         {
             _tableStorageDataManager = new TableStorageDataManager<TransactionEntity>("Transactions");
             _symbolTranslation = new Dictionary<string, string>() {
-                {"BAVA", "BAVA.CO"}
+                {"CARLb", "CARL-B.CO"},
+                {"MAERSKa", "MAERSK-A.CO"},
+                {"NOVOb", "NOVO-B.CO"},
+                {"SAS", "SAS-DKK.CO"},
+                {"CSP1", "CSPX.AS"},
+            };
+        }
+
+        private string TranslateSymbol(TransactionEntity entity)
+        {
+            // Some special cases isn't handled by the general rule of translation
+            if (_symbolTranslation.ContainsKey(entity.Symbol))
+                return _symbolTranslation[entity.Symbol];
+
+            // Generally an identifier id appended to the symbol based on the stock exchange
+            return entity.StockExchange switch
+            {
+                StockExchanges.OmxCopenhagen => entity.Symbol += ".CO",
+                StockExchanges.OsloBors => entity.Symbol += ".OL",
+                StockExchanges.Amsterdam => entity.Symbol += ".AS",
+                StockExchanges.DeutcheBorse => entity.Symbol += ".DE",
+                StockExchanges.Nasdaq => entity.Symbol,
+                _ => entity.Symbol
             };
         }
 
@@ -31,7 +54,7 @@ namespace api.DAL
             return (await _tableStorageDataManager.GetAll())
                 .Select(t => 
                 {
-                    t.Symbol = _symbolTranslation.GetValueOrDefault(t.Symbol) ?? t.Symbol;
+                    t.Symbol = TranslateSymbol(t);
                     return t;
                 }).ToList();
         }

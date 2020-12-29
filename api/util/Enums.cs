@@ -3,6 +3,8 @@ namespace api.util
     public enum TransactionType
     {
         Køb,
-        Salg
+        Salg,
+        Udbytte,
+        Udbyttebevis
     }
 }
