@@ -8,17 +8,17 @@ export interface Portfolio {
 }
 
 export interface Holding {
-    Symbol: string 
-    Name: string 
-    Currency: string 
-    Price: number
-    ChangeToday?: number
-    BuyPrice: number
-    AmountOwned: number 
-    BuyDate: Date
-    TotalChange?: number
-    TotalValue?: number
-    BuyValue?: number
-    ReturnValue?: number
-    ReturnPercentage?: number
+    symbol: string 
+    name: string 
+    currency: string 
+    price: number
+    changeToday: number
+    buyPrice: number
+    amountOwned: number 
+    buyDate: Date
+    totalChange: number
+    totalValue: number
+    buyValue: number
+    returnValue: number
+    returnPercentage: number
 }

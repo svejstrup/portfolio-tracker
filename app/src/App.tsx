@@ -27,10 +27,12 @@ function App() {
         Fetch portfolio
       </Button>
 
-      <PortfolioTable 
-        portfolio={portfolio}
-      />
-      
+      {portfolio && (
+        <PortfolioTable
+          key={portfolio.totalReturn}
+          portfolio={portfolio}
+        />
+      )}
       <DataImport/>
     </div>
   );

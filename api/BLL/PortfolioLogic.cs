@@ -30,7 +30,6 @@ namespace api.BLL
 
         public async Task<Portfolio> GetPortfolio()
         {
-            // await UpdateCurrencyExchangeRates(new List<string>{"USD", "NOK", "EUR"});
             var transactions = await _transactionDataManager.GetAll();
             var portfolio = await GetPortfolioFromTransactions(transactions);
 
