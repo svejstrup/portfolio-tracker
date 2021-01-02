@@ -19,6 +19,7 @@ namespace api.models
         double ExchangeRate {get; set;}
         DateTimeOffset Date {get; set;}
         string StockExchange {get; set;}
+        double TotalAmount {get; set;}
     }
 
     public class NordeaExportFormat : INordeaExportFormat
@@ -53,6 +54,9 @@ namespace api.models
         public DateTimeOffset Date {get; set;}
         [Name("Børs")]
         public string StockExchange { get; set; }
+        [Name("Afregningsbeløb")]
+        public double TotalAmount {get; set;}
+
     }
 
     public class NordeaExportFormatMap : ClassMap<NordeaExportFormat> 
@@ -61,6 +65,13 @@ namespace api.models
         {
             AutoMap(CultureInfo.InvariantCulture);
             Map(m => m.Date).TypeConverterOption.Format("dd-MM-yyyy");
+            Map(m => m.TotalAmount).ConvertUsing(row => 
+            {
+                if (double.TryParse(row.GetField("Afregningsbeløb", 1), out var amount))
+                    return amount;
+                
+                return 0;
+            });
         }
     }
 }

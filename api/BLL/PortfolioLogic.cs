@@ -96,13 +96,25 @@ namespace api.BLL
 
                         sharesOwned -= t.Pieces.Value;
                         costOfOwned -= t.Pieces.Value * pricePerShare;
-                        
-                        // Reset buy date if all shares are sold
-                        if (sharesOwned == 0)
-                            buyDate = DateTimeOffset.MinValue;
-
+                        break;
+                    case TransactionType.Udbyttebevis:
+                        sharesOwned += t.Pieces.Value;
+                        break;
+                    case TransactionType.Udbytte:
+                        previousHoldings.Add(new Holding(t)
+                        {
+                            AmountOwned = 1,
+                            BuyDate = buyDate,
+                            BuyPrice = 0,
+                            Price = t.TotalAmount,
+                            SoldDate = t.Date
+                        });
                         break;
                 }
+
+                // Reset buy date if all shares are sold
+                if (sharesOwned == 0)
+                    buyDate = DateTimeOffset.MinValue;
             }
 
             if (sharesOwned > 0)

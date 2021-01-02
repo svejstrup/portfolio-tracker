@@ -39,5 +39,6 @@ namespace api.models.entities
         public double ExchangeRate {get; set;}
         public DateTimeOffset Date {get; set;}
         public string StockExchange { get; set; }
+        public double TotalAmount {get; set;}
     }
 }

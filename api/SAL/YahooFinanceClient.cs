@@ -16,6 +16,9 @@ namespace api.SAL
 
         public async Task<Dictionary<string, BaseStock>> GetCurrentPrices(List<string> symbols) 
         {
+            if (!symbols.Any())
+                return new Dictionary<string, BaseStock>();
+
             var securities = await Yahoo
                 .Symbols(symbols.ToArray())
                 .Fields(Field.Symbol, Field.RegularMarketPrice, Field.RegularMarketChangePercent)

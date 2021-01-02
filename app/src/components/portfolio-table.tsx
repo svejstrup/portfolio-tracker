@@ -149,6 +149,16 @@ function SortingTableHead(props: EnhancedTableProps) {
   );
 };
 
+const getShortName = (holding: Holding) => {
+  if (holding.name.includes("ISHARES"))
+    return holding.symbol;
+
+  if (holding.name.includes("Sparinvest"))
+    return holding.symbol;
+
+  return holding.name.slice(0, 11);
+}
+
 export function PortfolioTable(props: Props) {
   const classes = useStyles();
   const [order, setOrder] = React.useState<Order>('asc');
@@ -180,10 +190,10 @@ export function PortfolioTable(props: Props) {
               .map((row) => row.changeToday && (
             <StyledTableRow key={row.name}>
               <StyledTableCell component="th" scope="row">
-                {row.symbol}
+                {getShortName(row)}
               </StyledTableCell>
               <StyledTableCell align="right">
-                {row.price.toFixed(1)}
+                {row.price.toFixed(2)}
               </StyledTableCell>
               <StyledTableCell align="right">
                 <ColoredNumber

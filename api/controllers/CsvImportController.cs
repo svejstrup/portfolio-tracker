@@ -10,6 +10,8 @@ namespace api.controllers
 {
     public class CsvImportController
     {
+        private const string ControllerName = "CsvImport/";
+
         private readonly ImportLogic _importLogic;
 
         public CsvImportController(ImportLogic importLogic)
@@ -17,9 +19,9 @@ namespace api.controllers
             _importLogic = importLogic;
         }
 
-        [FunctionName("ImportTransactions")]
+        [FunctionName(nameof(ImportTransactions))]
         public async Task<IActionResult> ImportTransactions(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "CsvImport/ImportTransactions")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = ControllerName + nameof(ImportTransactions))] HttpRequest req,
             ILogger log)
             {
                 var files = req?.Form?.Files;

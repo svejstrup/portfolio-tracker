@@ -52,7 +52,6 @@ namespace api.models
         public string Currency {get; set;}
         public double? Price {get; set;}
         public double? ChangeToday {get; set;}
-
         // public double ExchangeRate {get; set;} = 1;
     }
 
@@ -70,7 +69,7 @@ namespace api.models
         public int AmountOwned {get; set;}
         public DateTimeOffset BuyDate {get; set;}
         public DateTimeOffset? SoldDate {get; set;}
-        public double? TotalChange {get => Price / BuyPrice;}
+        public double? TotalChange {get => BuyPrice == 0 ? 1 : Price / BuyPrice;}
         public double? TotalValue {get => Price * AmountOwned;}
         public double? BuyValue {get => BuyPrice * AmountOwned;}
         public double? ReturnValue {get => TotalValue - BuyValue;}
