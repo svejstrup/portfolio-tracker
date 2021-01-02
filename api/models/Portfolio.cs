@@ -19,6 +19,20 @@ namespace api.models
         public double? CurrentValue {get => CurrentHoldings.Sum(h => h.TotalValue);}
         public double? TotalReturn {get => CurrentHoldings.Sum(h => h.ReturnValue) + PreviousHoldings.Sum(h => h.ReturnValue);}
         public double? TotalReturnPercentage {get => CurrentValue / (CurrentValue - TotalReturn);}
+        public double? TodaysReturn 
+        {
+            get
+            {
+                return CurrentHoldings.Select(h => 
+                {
+                    var previousPrice = h.Price / h.ChangeToday;
+
+                    return h.Price - previousPrice;
+                })
+                .Sum();
+            }
+        }
+        public double? TodaysReturnPercentage {get => CurrentValue / (CurrentValue - TodaysReturn);}
     }
 
     public interface IStock

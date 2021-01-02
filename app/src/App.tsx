@@ -1,31 +1,37 @@
-import { Button } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import './App.css';
 import { DataImport } from './components/data-import';
 import { PortfolioTable } from './components/portfolio-table';
+import { StatsSummary } from './components/stats-summary';
 import { Portfolio } from './models/portfolio';
 import { getTableData } from './services/api-service';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    App: {
+      backgroundColor: "#efefef",
+    }
+  })
+);
+
 function App() {
+  const classes = useStyles();
+
   const [portfolio, setPortfolio] = useState<Portfolio>();
 
   useEffect(() => {
-    // Update the document title using the browser API
-    // document.title = `You clicked ${count} times`;
-  });
+    console.log("us")
+    getTableData().then(res => setPortfolio(res));
+  }, []);
 
-  const getData = async () => {
-    let res = await getTableData();
-
-    console.log(res);
-    setPortfolio(res);
-  }
-  
   return (
-    <div className="App">
-      <Button variant="contained" color="primary" onClick={getData}>
-        Fetch portfolio
-      </Button>
+    <div className={classes.App}>
+
+      {portfolio && (
+        <StatsSummary
+          portfolio={portfolio}
+        />
+      )}
 
       {portfolio && (
         <PortfolioTable

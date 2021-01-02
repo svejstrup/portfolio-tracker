@@ -26,7 +26,7 @@ namespace api.SAL
                 {
                     Symbol = sec.Symbol,
                     Price = sec.RegularMarketPrice,
-                    ChangeToday = sec.RegularMarketChangePercent
+                    ChangeToday = 1 + (sec.RegularMarketChangePercent / 100)
                 })
                 .ToDictionary(sp => sp.Symbol);
 

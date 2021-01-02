@@ -1,10 +1,35 @@
-import { createStyles, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Theme } from "@material-ui/core";
+import { createStyles, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Theme, withStyles } from "@material-ui/core";
 import React from "react";
 import { Holding, Portfolio } from "../models/portfolio";
+import { ColoredNumber } from "./colored-number";
 
 interface Props {
   portfolio: Portfolio
 }
+
+const StyledTableCell = withStyles((theme: Theme) =>
+  createStyles({
+    head: {
+      backgroundColor: theme.palette.info.dark,
+      color: theme.palette.common.white,
+      lineHeight: "normal"
+    },
+    body: {
+      fontSize: 12,
+      lineHeight: "normal"
+    },
+  }),
+)(TableCell);
+
+const StyledTableRow = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+      },
+    },
+  }),
+)(TableRow);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,6 +54,10 @@ const useStyles = makeStyles((theme: Theme) =>
       top: 20,
       width: 1,
     },
+    th: {
+      lineHeight: "normal",
+      fontSize: "0.75rem"
+    }
   }),
 );
 
@@ -79,10 +108,10 @@ interface EnhancedTableProps {
 
 const headCells: HeadCell[] = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
-  { id: 'price', numeric: true, disablePadding: false, label: 'Price' },
+  { id: 'price', numeric: true, disablePadding: false, label: 'Price (DKK)' },
   { id: 'changeToday', numeric: true, disablePadding: false, label: 'Change' },
-  { id: 'totalValue', numeric: true, disablePadding: false, label: 'Value' },
-  { id: 'returnPercentage', numeric: true, disablePadding: false, label: 'Return' },
+  { id: 'totalValue', numeric: true, disablePadding: false, label: 'Value (DKK)' },
+  { id: 'returnPercentage', numeric: true, disablePadding: false, label: 'Return (DKK)' },
 ];
 
 function SortingTableHead(props: EnhancedTableProps) {
@@ -95,7 +124,7 @@ function SortingTableHead(props: EnhancedTableProps) {
     <TableHead>
       <TableRow>
         {headCells.map((headCell) => (
-          <TableCell
+          <StyledTableCell
             key={headCell.id}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
@@ -113,7 +142,7 @@ function SortingTableHead(props: EnhancedTableProps) {
                 </span>
               ) : null}
             </TableSortLabel>
-          </TableCell>
+          </StyledTableCell>
         ))}
       </TableRow>
     </TableHead>
@@ -122,8 +151,8 @@ function SortingTableHead(props: EnhancedTableProps) {
 
 export function PortfolioTable(props: Props) {
   const classes = useStyles();
-  const [order, setOrder] = React.useState<Order>('desc');
-  const [orderBy, setOrderBy] = React.useState<keyof Holding>('changeToday');
+  const [order, setOrder] = React.useState<Order>('asc');
+  const [orderBy, setOrderBy] = React.useState<keyof Holding>('name');
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Holding) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -149,15 +178,29 @@ export function PortfolioTable(props: Props) {
           <TableBody>
             {stableSort(props.portfolio.currentHoldings, getComparator(order, orderBy))
               .map((row) => row.changeToday && (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
+            <StyledTableRow key={row.name}>
+              <StyledTableCell component="th" scope="row">
                 {row.symbol}
-              </TableCell>
-              <TableCell align="right">{row.price.toFixed(2)} DKK</TableCell>
-              <TableCell align="right">{row.changeToday?.toFixed(2)} %</TableCell>
-              <TableCell align="right">{row.totalValue?.toFixed(2)} DKK</TableCell>
-              <TableCell align="right">{(((row.returnPercentage ?? 0) - 1) * 100).toFixed(2)} %</TableCell>
-            </TableRow>
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                {row.price.toFixed(1)}
+              </StyledTableCell>
+              <StyledTableCell align="right">
+                <ColoredNumber
+                  value={row.changeToday}
+                  formatted={false}
+                  suffix={"%"}
+                />
+              </StyledTableCell>
+              <StyledTableCell align="right">{row.totalValue?.toFixed(0)}</StyledTableCell>
+              <StyledTableCell align="right">
+                <ColoredNumber
+                  value={row.returnPercentage}
+                  formatted={false}
+                  suffix={"%"}
+                />
+              </StyledTableCell>
+            </StyledTableRow>
           ))}
           </TableBody>
       </Table>

@@ -3,6 +3,8 @@ export interface Portfolio {
     currentValue?: number
     totalReturn?: number
     totalReturnPercentage?: number
+    todaysReturn?: number
+    todaysReturnPercentage?: number
     currentHoldings: Holding[]
     previousHoldings: Holding[]
 }

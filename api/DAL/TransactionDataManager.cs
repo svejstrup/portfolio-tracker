@@ -23,6 +23,7 @@ namespace api.DAL
                 {"NOVOb", "NOVO-B.CO"},
                 {"SAS", "SAS-DKK.CO"},
                 {"CSP1", "CSPX.AS"},
+                {"AKERBP", "AKRBP.OL"},
             };
         }
 
