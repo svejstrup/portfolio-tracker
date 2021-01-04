@@ -1,9 +1,17 @@
-import { Button } from "@material-ui/core";
-import { useState } from "react";
+import { Button, createStyles, makeStyles, Paper, Theme } from "@material-ui/core";
+import React, { useState } from "react";
 import { uploadCsvFile } from "../services/api-service";
 
-export function DataImport() {
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    container: {
+        padding: theme.spacing(1)
+    }
+  })
+);
 
+export function DataImport() {
+    const classes = useStyles();
     const [file, setFile] = useState<File | null>()
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,7 +26,7 @@ export function DataImport() {
     }
 
     return (
-        <div>
+        <Paper className={classes.container}>
             <input type="file" onChange={handleFileChange}></input>
             <Button 
                 color="primary" 
@@ -28,6 +36,6 @@ export function DataImport() {
             >
                 IMPORT
             </Button>
-        </div>
+        </Paper>
     )
 }
