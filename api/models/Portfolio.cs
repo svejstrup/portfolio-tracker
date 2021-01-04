@@ -27,7 +27,7 @@ namespace api.models
                 {
                     var previousPrice = h.Price / h.ChangeToday;
 
-                    return h.Price - previousPrice;
+                    return (h.Price - previousPrice) * h.AmountOwned;
                 })
                 .Sum();
             }
