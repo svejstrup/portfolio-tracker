@@ -83,14 +83,14 @@ namespace api.BLL
                         costOfOwned += t.Pieces.Value * t.Price * t.ExchangeRate + t.Fee;
                         break;
                     case TransactionType.Salg:
-                        costOfOwned += t.Fee; // Add the fee for selling
                         var pricePerShare = costOfOwned / sharesOwned; // Calculate average buy price per share of currently owned shares
+
                         previousHoldings.Add(new Holding(t)
                         {
                             AmountOwned = t.Pieces.Value,
                             BuyDate = buyDate,
                             BuyPrice = pricePerShare,
-                            Price = t.Price * t.ExchangeRate,
+                            Price = t.Price * t.ExchangeRate - (t.Fee / t.Pieces),
                             SoldDate = t.Date
                         });
 

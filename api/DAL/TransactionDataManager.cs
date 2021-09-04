@@ -24,6 +24,7 @@ namespace api.DAL
                 {"SAS", "SAS-DKK.CO"},
                 {"CSP1", "CSPX.AS"},
                 {"AKERBP", "AKRBP.OL"},
+                {"VOWG_p", "VOW3.DE"},
             };
         }
 
