@@ -23,8 +23,7 @@ namespace api.BLL
 
         public async Task ImportTransactions(IFormFile file)
         {
-            var dbTransactions = await _transactionsDataManager.GetAll();
-            var existingOrderNumbers = dbTransactions.Select(t => (t.PartitionKey, t.RowKey)).ToHashSet();
+            var existingOrderNumbers = await GetExistingOrderNumbers();
 
             var newTransactions = ParseCsv(file)
                 .Select(nef => new TransactionEntity(nef))
@@ -34,6 +33,24 @@ namespace api.BLL
             await _transactionsDataManager.InsertMany(newTransactions);
 
             // TODO - update history for new transactions
+        }
+
+        private async Task<HashSet<(string PartitionKey, string RowKey)>> GetExistingOrderNumbers()
+        {
+            var dbTransactions = await _transactionsDataManager.GetAll();
+            var existingOrderNumbers = dbTransactions.Select(t => (t.PartitionKey, t.RowKey)).ToHashSet();
+            return existingOrderNumbers;
+        }
+
+        public async Task AddSingleTransaction(TransactionDto transactionDto)
+        {
+            var existingOrderNumbers = await GetExistingOrderNumbers();
+
+            var entity = new TransactionEntity(transactionDto);
+
+            if (!existingOrderNumbers.Contains((entity.PartitionKey, entity.RowKey)))
+                await _transactionsDataManager.InsertMany(new List<TransactionEntity> {entity});
+
         }
 
         private List<NordeaExportFormat> ParseCsv(IFormFile file) 

@@ -7,4 +7,13 @@ namespace api.util
         Udbytte,
         Udbyttebevis
     }
+
+    public enum StockExchange
+    {
+        OmxCopenhagen,
+        OsloBors,
+        Nasdaq,
+        Amsterdam,
+        DeutcheBorse,
+    }
 }
