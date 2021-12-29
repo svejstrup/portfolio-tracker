@@ -40,7 +40,7 @@ namespace api.BLL
         {
             var portfolio = new Portfolio();
             
-            foreach (var group in transactions.GroupBy(t => t.Symbol))
+            foreach (var group in transactions.GroupBy(t => t.IsinCode.Trim().ToLowerInvariant()))
             {
                 var (currentHolding, previousHoldings) = GetHoldingsSingleStock(group.ToList());
                 
@@ -83,7 +83,7 @@ namespace api.BLL
                         costOfOwned += t.Pieces.Value * t.Price * t.ExchangeRate + t.Fee;
                         break;
                     case TransactionType.Salg:
-                        var pricePerShare = costOfOwned / sharesOwned; // Calculate average buy price per share of currently owned shares
+                        var pricePerShare = sharesOwned == 0 ? 0 : costOfOwned / sharesOwned; // Calculate average buy price per share of currently owned shares
 
                         previousHoldings.Add(new Holding(t)
                         {
@@ -117,9 +117,9 @@ namespace api.BLL
                     buyDate = DateTimeOffset.MinValue;
             }
 
-            if (sharesOwned > 0)
+            if (sharesOwned > 0 && !transactionEntities.All(te => string.IsNullOrWhiteSpace(te.Symbol)))
             {
-                currentHolding = new Holding(transactionEntities.First())
+                currentHolding = new Holding(transactionEntities.FirstOrDefault(te => !string.IsNullOrWhiteSpace(te.Symbol)))
                 {
                     AmountOwned = sharesOwned,
                     BuyDate = buyDate,
@@ -156,23 +156,6 @@ namespace api.BLL
                 }).ToList();
 
             return holdings;
-        }
-
-        public async Task UpdateCurrencyExchangeRates()
-        {
-            var portfolio = await GetPortfolio();
-
-            var currencies = portfolio.CurrentHoldings
-                .Select(ch => ch.Currency)
-                .Distinct()
-                .Where(c => c != "DKK");
-
-            var exhangeRates = await _currencyClient.GetExchangeRates(currencies);
-
-            var entities = exhangeRates
-                .Select(rate => new CurrencyEntity(rate.Key, rate.Value, DateTimeOffset.UtcNow));
-            
-            await _currencyDataManager.InsertMany(entities);
         }
     }
 }

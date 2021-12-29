@@ -20,6 +20,7 @@ namespace api.models
         DateTimeOffset Date {get; set;}
         string StockExchange {get; set;}
         double TotalAmount {get; set;}
+        string IsinCode {get; set;}
     }
 
     public class NordeaExportFormat : INordeaExportFormat
@@ -56,6 +57,8 @@ namespace api.models
         public string StockExchange { get; set; }
         [Name("Afregningsbeløb")]
         public double TotalAmount {get; set;}
+        [Name("ISIN kode")]
+        public string IsinCode {get; set;}
 
     }
 
@@ -67,7 +70,7 @@ namespace api.models
             Map(m => m.Date).TypeConverterOption.Format("dd-MM-yyyy");
             Map(m => m.TotalAmount).ConvertUsing(row => 
             {
-                if (double.TryParse(row.GetField("Afregningsbeløb", 1), out var amount))
+                if (double.TryParse(row.GetField("Afregningsbeløb", 1), NumberStyles.Any, CultureInfo.InvariantCulture, out var amount))
                     return amount;
                 
                 return 0;

@@ -23,15 +23,14 @@ namespace api.controllers
         public async Task<IActionResult> ImportTransactions(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = ControllerName + nameof(ImportTransactions))] HttpRequest req,
             ILogger log)
-            {
-                var files = req?.Form?.Files;
+        {
+            var files = req?.Form?.Files;
 
-                if (files == null || files.Count == 0)
-                    return new NotFoundResult();
+            if (files == null || files.Count == 0)
+                return new NotFoundResult();
 
-                await _importLogic.ImportTransactions(files[0]);
-                
-                return new OkResult();
-            }
+            await _importLogic.ImportTransactions(files[0]);
+            return new OkResult();
+        }
     }
 }

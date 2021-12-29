@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace api.SAL
 
                 var exchangeRateString = json.Split(':').Last().Replace("}", string.Empty);
 
-                if (double.TryParse(exchangeRateString, out var exchangeRate))
+                if (double.TryParse(exchangeRateString, NumberStyles.Any, CultureInfo.InvariantCulture, out var exchangeRate))
                 {
                     exchangeRateMap.Add(currency, exchangeRate);
                 }

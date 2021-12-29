@@ -23,8 +23,10 @@ const useStyles = makeStyles((theme: Theme) =>
 export function ColoredNumber(props: Props)
 {
     const classes = useStyles(props);
-    const formattedValue = props.formatted ? props.value : ((props.value - 1) * 100)
+    let formattedValue = props.formatted ? props.value : ((props.value - 1) * 100)
     const colorClass = formattedValue >= 0 ? classes.green : classes.red;
+
+    formattedValue = isNaN(formattedValue) ? 0 : formattedValue;
 
     return (
         <div className={colorClass}>

@@ -24,11 +24,9 @@ namespace api.BLL
         public async Task ImportTransactions(IFormFile file)
         {
             var dbTransactions = await _transactionsDataManager.GetAll();
-            var existingOrderNumbers = dbTransactions.Select(t => (t.PartitionKey, t.RowKey)).ToHashSet();
 
             var newTransactions = ParseCsv(file)
                 .Select(nef => new TransactionEntity(nef))
-                .Where(t => !existingOrderNumbers.Contains((t.PartitionKey, t.RowKey)))
                 .ToList();
 
             await _transactionsDataManager.InsertMany(newTransactions);

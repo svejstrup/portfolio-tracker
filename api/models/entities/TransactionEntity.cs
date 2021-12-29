@@ -40,5 +40,6 @@ namespace api.models.entities
         public DateTimeOffset Date {get; set;}
         public string StockExchange { get; set; }
         public double TotalAmount {get; set;}
+        public string IsinCode { get; set; }
     }
 }

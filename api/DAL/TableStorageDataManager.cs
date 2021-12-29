@@ -93,50 +93,5 @@ namespace api.DAL
             
             return entities;
         }
-
-        // public async Task<List<LogTransEntity>> GetDataByDeviceIdAndDate(string partitionKey, DateTime fromDate, DateTime toDate, string deviceDataType)
-        // {
-        //     var entities = new List<LogTransEntity>();
-        //     TableContinuationToken token = null;
-        //     if (deviceDataType == "NitrateLogTrans")
-        //     {
-        //         TableQuery<NitrateLogTransEntity> rangeQuery = new TableQuery<NitrateLogTransEntity>()
-        //             .Where(
-        //                 TableQuery.CombineFilters(
-        //                     TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey),
-        //                     TableOperators.And,
-        //                     TableQuery.CombineFilters(
-        //                         TableQuery.GenerateFilterConditionForDate("MeasurementTime", QueryComparisons.GreaterThanOrEqual, fromDate),
-        //                         TableOperators.And,
-        //                         TableQuery.GenerateFilterConditionForDate("MeasurementTime", QueryComparisons.LessThanOrEqual, toDate))));
-        //         do
-        //         {
-        //             var queryResult = await _cloudTable.ExecuteQuerySegmentedAsync(rangeQuery, token);
-        //             entities.AddRange(queryResult.Results);
-        //             token = queryResult.ContinuationToken;
-        //         } while (token != null);
-        //     }
-        //     else if (deviceDataType == "NitrateNitrogenLogTrans")
-        //     {
-        //         TableQuery<NitrateNitrogenLogTransEntity> rangeQuery = new TableQuery<NitrateNitrogenLogTransEntity>()
-        //             .Where(
-        //                 TableQuery.CombineFilters(
-        //                     TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey),
-        //                     TableOperators.And,
-        //                     TableQuery.CombineFilters(
-        //                         TableQuery.GenerateFilterConditionForDate("MeasurementTime", QueryComparisons.GreaterThanOrEqual, fromDate),
-        //                         TableOperators.And,
-        //                         TableQuery.GenerateFilterConditionForDate("MeasurementTime", QueryComparisons.LessThanOrEqual, toDate))));
-        //         do
-        //         {
-        //             var queryResult = await _cloudTable.ExecuteQuerySegmentedAsync(rangeQuery, token);
-        //             entities.AddRange(queryResult.Results);
-        //             token = queryResult.ContinuationToken;
-        //         } while (token != null);
-        //     }
-
-        //     return entities;
-        // }
-    
     }
 }

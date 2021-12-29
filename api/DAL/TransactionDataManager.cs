@@ -25,6 +25,7 @@ namespace api.DAL
                 {"CSP1", "CSPX.AS"},
                 {"AKERBP", "AKRBP.OL"},
                 {"VOWG_p", "VOW3.DE"},
+                {"", ""},
             };
         }
 
