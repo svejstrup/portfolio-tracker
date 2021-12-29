@@ -13,7 +13,7 @@ namespace api.models.entities
         public TransactionEntity(NordeaExportFormat exportData)
         {
             PartitionKey = exportData.Name.Replace("/", string.Empty);
-            RowKey = $"{exportData.OrderNumber}:{exportData.OrderType}:{exportData.Date.ToUnixTimeSeconds()}";
+            RowKey = $"{exportData.OrderNumber}:{exportData.OrderType}:{exportData.Account}:{exportData.Date.ToUnixTimeSeconds()}";
 
             foreach(var prop in typeof(NordeaExportFormat).GetProperties().Where(p => p.CanWrite))
             {
