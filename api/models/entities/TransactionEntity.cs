@@ -31,7 +31,6 @@ namespace api.models.entities
         public string OrderType {get; set;}
         public int? Pieces {get; set;}
         public double Price {get; set;}
-        // public double TotalAmount {get; set;}
         public string Account {get; set;}
         public double Fee {get; set;}
         public string Symbol {get; set;}

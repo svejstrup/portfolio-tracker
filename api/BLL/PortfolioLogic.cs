@@ -79,6 +79,7 @@ namespace api.BLL
                 switch(transactionType)
                 {
                     case TransactionType.Køb:
+                    case TransactionType.Udbyttebevis:
                         sharesOwned += t.Pieces.Value;
                         costOfOwned += t.Pieces.Value * t.Price * t.ExchangeRate + t.Fee;
                         break;
@@ -96,9 +97,6 @@ namespace api.BLL
 
                         sharesOwned -= t.Pieces.Value;
                         costOfOwned -= t.Pieces.Value * pricePerShare;
-                        break;
-                    case TransactionType.Udbyttebevis:
-                        sharesOwned += t.Pieces.Value;
                         break;
                     case TransactionType.Udbytte:
                         previousHoldings.Add(new Holding(t)

@@ -52,7 +52,6 @@ namespace api.models
         public string Currency {get; set;}
         public double? Price {get; set;}
         public double? ChangeToday {get; set;}
-        // public double ExchangeRate {get; set;} = 1;
     }
 
     public class Holding : BaseStock
